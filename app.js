@@ -21,7 +21,7 @@ db.connect((err) => {
     console.log('Mysql Connected');
 })
 
-//test data
+//test data（add data)
 app.get('/test', function(req, res){
     let workshop = {name: "workshop2"};
     let sql = 'INSERT INTO workShop SET ?';
