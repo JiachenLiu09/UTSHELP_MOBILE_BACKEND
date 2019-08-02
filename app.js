@@ -5,6 +5,8 @@ var app = express();
 var bodyParser = require('body-parser');
 app.use(bodyParser());
 
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
+
 const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
@@ -21,51 +23,56 @@ db.connect((err) => {
 
 //test data
 app.get('/test', function(req, res){
-    let student = {studentId: 12345678, firstName: "test", lastName: "test", password: "123456", email: "12345678@student.uts.edu.au"};
-    let sql = 'INSERT INTO student SET ?';
-    let query = db.query(sql, student, function(err, result) {
+    let workshop = {name: "workshop2"};
+    let sql = 'INSERT INTO workShop SET ?';
+    let query = db.query(sql, workshop, function(err, result) {
         if(err) throw err;
         console.log(result);
     })
 })
 
-//get the workshop list
-app.get('/workshopList', function (req, res) {
+ //get the skillSet list
+app.get('/skillSet', urlencodedParser, function(req, res) {
+    let sql = `SELECT * FROM SKILLSET;`;
+    let query = db.query(sql, function(err, result) {
+        if(err) throw err;
+        res.end(JSON.stringify(result, null, 2));
+    })
+})
 
-    var response = {
-        "data": [
-            {
-                "id": 1,
-                "name": "Workshop_1",
-                "description": "This 1st workshop."
-            },
-            {
-                "id": 2,
-                "name": "Workshop_2",
-                "description": "This 2nd workshop."
-            },
-            {
-                "id": 3,
-                "name": "Workshop_3",
-                "description": "This 3rd workshop."
-            }
-        ]
-    };
-     res.end(JSON.stringify(response))
- })
- 
+ //get workshops typed by sillset
+app.post('/skillSet/workshopList', urlencodedParser, function(req, res) {
+    let skillSetId = req.body.skillSetId;
+    let sql = `SELECT * FROM WORKSHOP WHERE skillSetId = "${skillSetId}"`;
+    let query = db.query(sql, function(err, result) {
+        if(err) throw err;
+        res.end(JSON.stringify(result, null, 2));
+    })
+})
+
+//book the workshop by current student
+app.post('/book', urlencodedParser, function(req, res) {
+    let studentId = req.body.studentId;
+    let workshopId = req.body.workshopId;
+    let sql = `INSERT INTO t_student_workShop values(${studentId}, ${workshopId});`;
+    let query = db.query(sql, function(err, result) {
+        if(err) throw err;
+        res.end(JSON.stringify(result, null, 2));
+    })
+})
+
 
 //  get the student information
 app.post('/studentInformation', function (req, res) {
     console.log(req.body);
-    var email = req.body.email;
-    var response;
+    let email = req.body.email;
+    let response;
     let sql = `SELECT * FROM STUDENT WHERE email = "${email}";`;
     let query = db.query(sql, function(err, result) {
         if(err) throw err;
         response = result[0];
         console.log(response);
-        res.end(JSON.stringify(response))
+        res.end(JSON.stringify(response, null, 2))
     })
 })
 
