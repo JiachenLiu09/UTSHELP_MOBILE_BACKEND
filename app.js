@@ -1,5 +1,7 @@
 const express = require('express');
 const mysql = require('mysql');
+var nodemailer = require('nodemailer');
+
 
 var app = express();
 var bodyParser = require('body-parser');
@@ -23,7 +25,7 @@ db.connect((err) => {
 
 //test data
 app.get('/test', function(req, res){
-    let skillSet = {name: "skillSet_1"};
+    let skillSet = {name: "skillSet_2"};
     let sql = 'INSERT INTO skillSet SET ?';
     let query = db.query(sql, skillSet, function(err, result) {
         if(err) throw err;
@@ -59,8 +61,30 @@ app.post('/book', urlencodedParser, function(req, res) {
         if(err) throw err;
         res.end(JSON.stringify(result, null, 2));
     })
+    var transporter = nodemailer.createTransport({
+        service: 'Gmail',
+        auth: {
+          user: 'liujiachen9702@gmail.com',
+          pass: 'Liu152104'
+       
+        }
+        });
+        var mailOptions = {
+          from: 'liujiachen9702@gmail.com',
+          to: 'liujiachen9702@gmail.com',
+          subject: 'Workshop Registration',
+          text: `You(${studentId}) have booked this workshop successfully!`
+        };
+       
+        transporter.sendMail(mailOptions, function (err, info) {
+          if (err) {
+            console.log(err);
+            return;
+          }
+       
+          console.log('Sending successfully');
+        });
 })
-
 
 //  get the student information
 app.post('/studentInformation', function (req, res) {
