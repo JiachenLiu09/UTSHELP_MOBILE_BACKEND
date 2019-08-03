@@ -23,9 +23,9 @@ db.connect((err) => {
 
 //test data
 app.get('/test', function(req, res){
-    let workshop = {name: "workshop2"};
-    let sql = 'INSERT INTO workShop SET ?';
-    let query = db.query(sql, workshop, function(err, result) {
+    let skillSet = {name: "skillSet_1"};
+    let sql = 'INSERT INTO skillSet SET ?';
+    let query = db.query(sql, skillSet, function(err, result) {
         if(err) throw err;
         console.log(result);
     })
@@ -33,7 +33,7 @@ app.get('/test', function(req, res){
 
  //get the skillSet list
 app.get('/skillSet', urlencodedParser, function(req, res) {
-    let sql = `SELECT * FROM SKILLSET;`;
+    let sql = `SELECT * FROM skillSet;`;
     let query = db.query(sql, function(err, result) {
         if(err) throw err;
         res.end(JSON.stringify(result, null, 2));
