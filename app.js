@@ -8,7 +8,7 @@ app.use(bodyParser());
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const db = mysql.createConnection({
-    host: 'localhost',
+    host: 'aagmqmvaq3h3zl.cvdpbjinsegf.us-east-2.rds.amazonaws.com',
     user: 'root',
     password: 'rootroot',
     database: 'uts_help'
