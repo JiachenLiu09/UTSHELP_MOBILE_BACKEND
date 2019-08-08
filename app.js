@@ -10,7 +10,7 @@ app.use(bodyParser());
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const db = mysql.createConnection({
-    host: 'aagmqmvaq3h3zl.cvdpbjinsegf.us-east-2.rds.amazonaws.com',
+    host: 'localhost',
     user: 'root',
     password: 'rootroot',
     database: 'uts_help'
@@ -45,7 +45,7 @@ app.get('/skillSet', urlencodedParser, function(req, res) {
  //get workshops typed by sillset
 app.post('/skillSet/workshopList', urlencodedParser, function(req, res) {
     let skillSetId = req.body.skillSetId;
-    let sql = `SELECT * FROM WORKSHOP WHERE skillSetId = "${skillSetId}"`;
+    let sql = `SELECT * FROM workshop WHERE skillSetId = ${skillSetId}`;
     let query = db.query(sql, function(err, result) {
         if(err) throw err;
         res.end(JSON.stringify(result, null, 2));
