@@ -10,7 +10,7 @@ app.use(bodyParser());
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const db = mysql.createConnection({
-    host: 'localhost',
+    host: 'UtshelpMobileServer-env.eemrgf7eub.us-east-2.elasticbeanstalk.com',
     user: 'root',
     password: 'rootroot',
     database: 'uts_help'
