@@ -10,7 +10,7 @@ app.use(bodyParser());
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const db = mysql.createConnection({
-    host: 'UtshelpMobileServer-env.eemrgf7eub.us-east-2.elasticbeanstalk.com',
+    host: 'aagmqmvaq3h3zl.cvdpbjinsegf.us-east-2.rds.amazonaws.com',
     user: 'root',
     password: 'rootroot',
     database: 'uts_help'
@@ -25,8 +25,8 @@ db.connect((err) => {
 
 //test data
 app.get('/test', function(req, res){
-    let skillSet = {name: "skillSet_2"};
-    let sql = 'INSERT INTO skillSet SET ?';
+    let skillSet = {name: "workShop_2"};
+    let sql = 'INSERT INTO workShop SET ?';
     let query = db.query(sql, skillSet, function(err, result) {
         if(err) throw err;
         console.log(result);
@@ -38,7 +38,9 @@ app.get('/skillSet', urlencodedParser, function(req, res) {
     let sql = `SELECT * FROM skillSet;`;
     let query = db.query(sql, function(err, result) {
         if(err) throw err;
-        res.end(JSON.stringify(result, null, 2));
+        res.end({
+            state: 'success!'
+        });
     })
 })
 
@@ -56,7 +58,10 @@ app.post('/skillSet/workshopList', urlencodedParser, function(req, res) {
 app.post('/book', urlencodedParser, function(req, res) {
     let studentId = req.body.studentId;
     let workshopId = req.body.workshopId;
-    let sql = `INSERT INTO t_student_workShop values(${studentId}, ${workshopId});`;
+    let sql = `
+        INSERT INTO t_student_workShop values(${studentId}, ${workshopId});
+        UPDATE workShop SET placeAvailable=placeAvailable-1 WHERE workShopId=${workshopId};
+    `;
     let query = db.query(sql, function(err, result) {
         if(err) throw err;
         res.end(JSON.stringify(result, null, 2));
