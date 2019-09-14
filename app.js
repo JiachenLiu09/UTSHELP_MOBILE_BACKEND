@@ -25,12 +25,15 @@ db.connect((err) => {
 
 //test data
 app.get('/test', function(req, res){
-    let skillSet = {
-        name: "workShop_1",
-        placeAvailable: 20
+    let student = {
+        studentId: 12990659,
+        password: "123456",
+        firstName: "Jiachen",
+        lastName: "Liu",
+        phone: "0452300165"
     };
-    let sql = 'INSERT INTO workShop SET ?';
-    let query = db.query(sql, skillSet, function(err, result) {
+    let sql = 'INSERT INTO student SET ?';
+    let query = db.query(sql, student, function(err, result) {
         if(err) throw err;
         console.log(result);
     })
@@ -47,7 +50,7 @@ app.get('/skillSet', urlencodedParser, function(req, res) {
     })
 })
 
-//get workshops typed by sillset
+//get workshops typed by skillSet
 app.post('/skillSet/workshopList', urlencodedParser, function(req, res) {
     let skillSetId = req.body.skillSetId;
     let sql = `SELECT * FROM workshop WHERE skillSetId = ${skillSetId}`;
@@ -148,15 +151,21 @@ app.post('/studentInformation', function (req, res) {
 //login
 app.post('/login', function (req, res) {
     console.log(req.body);
-    var email = req.body.email;
+    var studentId = req.body.studentId;
     var password = req.body.password;
     var response;
-    let sql = `SELECT * FROM STUDENT WHERE email = "${email}" and password = "${password}";`;
+    let sql = `SELECT * FROM STUDENT WHERE studentId = "${studentId}" and password = "${password}";`;
     let query = db.query(sql, function(err, result) {
         if(err) throw err;
         response = result[0];
-        console.log(response);
-        res.end(JSON.stringify(response))
+        if(response != undefined) {
+            res.end(JSON.stringify(response))
+        } else {
+            let student = {
+                studentId: 0
+            }
+            res.end(JSON.stringify(student));
+        }
     })
  })
 
