@@ -136,10 +136,10 @@ app.post('/cancel', urlencodedParser, function(req, res) {
 
 //get the student information
 app.post('/studentInformation', function (req, res) {
-    console.log(req.body);
-    let email = req.body.email;
+    console.log('student information: ' + req.body);
+    let studentId = req.body.studentId;
     let response;
-    let sql = `SELECT * FROM STUDENT WHERE email = "${email}";`;
+    let sql = `SELECT * FROM STUDENT WHERE studentId = "${studentId}";`;
     let query = db.query(sql, function(err, result) {
         if(err) throw err;
         response = result[0];
