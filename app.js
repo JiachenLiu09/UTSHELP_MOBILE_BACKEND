@@ -21,23 +21,21 @@ db.connect((err) => {
         throw err;
     }
     console.log('Mysql Connected');
-})
+});
 
 //test data
 app.get('/test', function(req, res){
     let student = {
-        studentId: 12990659,
-        password: "123456",
-        firstName: "Jiachen",
-        lastName: "Liu",
-        phone: "0452300165"
+        workshopId: 2,
+        name: 'test',
+        placeAvailable: 20
     };
-    let sql = 'INSERT INTO student SET ?';
+    let sql = 'INSERT INTO workShop SET ?';
     let query = db.query(sql, student, function(err, result) {
         if(err) throw err;
         console.log(result);
-    })
-})
+    });
+});
 
 //get the skillSet list
 app.get('/skillSet', urlencodedParser, function(req, res) {
@@ -47,8 +45,8 @@ app.get('/skillSet', urlencodedParser, function(req, res) {
         res.end({
             state: 'success!'
         });
-    })
-})
+    });
+});
 
 //get workshops typed by skillSet
 app.post('/skillSet/workshopList', urlencodedParser, function(req, res) {
@@ -57,8 +55,19 @@ app.post('/skillSet/workshopList', urlencodedParser, function(req, res) {
     let query = db.query(sql, function(err, result) {
         if(err) throw err;
         res.end(JSON.stringify(result, null, 2));
-    })
-})
+    });
+});
+
+app.post('/bookedWorkshops', urlencodedParser, function(req, res) {
+    let studentId = parseInt(req.body.studentId);
+    console.log(studentId);
+    let sql = `SELECT workShop.name FROM workShop INNER JOIN t_student_workShop ON t_student_workShop.workShopId=workShop.workShopId INNER JOIN student ON student.studentId=${studentId} and t_student_workShop.studentId = student.studentId;`;
+    let query = db.query(sql, function(err, result) {
+        if(err) throw err;
+        console.log(JSON.stringify(result, null, 2));
+        res.end(JSON.stringify(result, null, 2));
+    });
+});
 
 //book the workshop by current student
 app.post('/book', urlencodedParser, function(req, res) {
@@ -71,7 +80,7 @@ app.post('/book', urlencodedParser, function(req, res) {
     let query = db.query(sql, function(err, result) {
         if(err) throw err;
         res.end(JSON.stringify(result, null, 2));
-    })
+    });
     var transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
@@ -95,7 +104,7 @@ app.post('/book', urlencodedParser, function(req, res) {
        
           console.log('Sending successfully');
         });
-})
+});
 
 //cancel the workshop by current student
 app.post('/cancel', urlencodedParser, function(req, res) {
@@ -108,7 +117,7 @@ app.post('/cancel', urlencodedParser, function(req, res) {
     let query = db.query(sql, function(err, result) {
         if(err) throw err;
         res.end(JSON.stringify(result, null, 2));
-    })
+    });
     var transporter = nodemailer.createTransport({
         service: 'Gmail',
         auth: {
@@ -132,7 +141,7 @@ app.post('/cancel', urlencodedParser, function(req, res) {
        
           console.log('Sending successfully');
         });
-})
+});
 
 //get the student information
 app.post('/studentInformation', function (req, res) {
@@ -144,9 +153,9 @@ app.post('/studentInformation', function (req, res) {
         if(err) throw err;
         response = result[0];
         console.log(response);
-        res.end(JSON.stringify(response, null, 2))
-    })
-})
+        res.end(JSON.stringify(response, null, 2));
+    });
+});
 
 //login
 app.post('/login', function (req, res) {
@@ -159,21 +168,21 @@ app.post('/login', function (req, res) {
         if(err) throw err;
         response = result[0];
         if(response != undefined) {
-            res.end(JSON.stringify(response))
+            res.end(JSON.stringify(response));
         } else {
             let student = {
                 studentId: 0
-            }
+            };
             res.end(JSON.stringify(student));
         }
-    })
- })
+    });
+ });
 
 var server = app.listen(8888, function () {
  
-  var host = server.address().address
-  var port = server.address().port
+  var host = server.address().address;
+  var port = server.address().port;
  
-  console.log("Server on http://%s:%s", host, port)
+  console.log("Server on http://%s:%s", host, port);
  
-})
+});
