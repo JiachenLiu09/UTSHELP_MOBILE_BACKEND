@@ -13,7 +13,8 @@ const db = mysql.createConnection({
     host: 'localhost',
     user: 'root',
     password: 'rootroot',
-    database: 'uts_help'
+    database: 'uts_help',
+    multipleStatements: true
 });
 
 db.connect((err) => {
@@ -48,6 +49,14 @@ app.get('/skillSet', urlencodedParser, function(req, res) {
     });
 });
 
+app.get('/workshops', urlencodedParser, function(req, res) {
+    let sql = `SELECT * FROM workshop;`;
+    let query = db.query(sql, function(err, result) {
+        if(err) throw err;
+        res.end(JSON.stringify(result, null, 2));
+    });
+});
+
 //get workshops typed by skillSet
 app.post('/skillSet/workshopList', urlencodedParser, function(req, res) {
     let skillSetId = req.body.skillSetId;
@@ -73,13 +82,23 @@ app.post('/bookedWorkshops', urlencodedParser, function(req, res) {
 app.post('/book', urlencodedParser, function(req, res) {
     let studentId = req.body.studentId;
     let workshopId = req.body.workshopId;
+    let successInf = {
+        inf: 'success'
+    };
+    let failInf = {
+        inf: 'fail'
+    }
     let sql = `
-        INSERT INTO t_student_workShop values(${studentId}, ${workshopId});
-        UPDATE workShop SET placeAvailable=placeAvailable-1 WHERE workShopId=${workshopId};
+        INSERT INTO t_student_workShop values(${studentId}, ${workshopId});UPDATE workShop SET placeAvailable=placeAvailable-1 WHERE workShopId=${workshopId};
     `;
+    console.log(studentId)
     let query = db.query(sql, function(err, result) {
-        if(err) throw err;
-        res.end(JSON.stringify(result, null, 2));
+        if(err) {
+            res.end(JSON.stringify(failInf))
+            console.log("book success")
+        } else {
+            res.end(JSON.stringify(successInf));
+        }
     });
     var transporter = nodemailer.createTransport({
         service: 'Gmail',
@@ -111,12 +130,20 @@ app.post('/cancel', urlencodedParser, function(req, res) {
     let studentId = req.body.studentId;
     let workshopId = req.body.workshopId;
     let sql = `
-        DELETE FROM t_student_workShop WHERE workShopId=${workshopId} and studentId=${studentId};
-        UPDATE workShop SET placeAvailable=placeAvailable+1 WHERE workShopId=${workshopId};
+        DELETE FROM t_student_workShop WHERE workShopId=${workshopId} and studentId=${studentId};UPDATE workShop SET placeAvailable=placeAvailable+1 WHERE workShopId=${workshopId};
     `;
+    let successInf = {
+        inf: 'success'
+    };
+    let failInf = {
+        inf: 'fail'
+    }
     let query = db.query(sql, function(err, result) {
-        if(err) throw err;
-        res.end(JSON.stringify(result, null, 2));
+        if(err) {
+            res.end(JSON.stringify(failInf))
+        } else {
+            res.end(JSON.stringify(successInf));
+        }
     });
     var transporter = nodemailer.createTransport({
         service: 'Gmail',
