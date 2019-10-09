@@ -10,7 +10,7 @@ app.use(bodyParser());
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const db = mysql.createConnection({
-    host: 'localhost',
+    host: 'aagmqmvaq3h3zl.cvdpbjinsegf.us-east-2.rds.amazonaws.com',
     user: 'root',
     password: 'rootroot',
     database: 'uts_help',
@@ -24,45 +24,10 @@ db.connect((err) => {
     console.log('Mysql Connected');
 });
 
-//test data
-app.get('/test', function(req, res){
-    let student = {
-        workshopId: 2,
-        name: 'test',
-        placeAvailable: 20
-    };
-    let sql = 'INSERT INTO workShop SET ?';
-    let query = db.query(sql, student, function(err, result) {
-        if(err) throw err;
-        console.log(result);
-    });
-});
-
-//get the skillSet list
-app.get('/skillSet', urlencodedParser, function(req, res) {
-    let sql = `SELECT * FROM skillSet;`;
-    let query = db.query(sql, function(err, result) {
-        if(err) throw err;
-        res.end({
-            state: 'success!'
-        });
-    });
-});
-
 app.get('/workshops', urlencodedParser, function(req, res) {
-    let sql = `SELECT * FROM workshop;`;
+    let sql = `SELECT * FROM workShop;`;
     let query = db.query(sql, function(err, result) {
-        if(err) throw err;
-        res.end(JSON.stringify(result, null, 2));
-    });
-});
-
-//get workshops typed by skillSet
-app.post('/skillSet/workshopList', urlencodedParser, function(req, res) {
-    let skillSetId = req.body.skillSetId;
-    let sql = `SELECT * FROM workshop WHERE skillSetId = ${skillSetId}`;
-    let query = db.query(sql, function(err, result) {
-        if(err) throw err;
+        if(err) console.log(err);
         res.end(JSON.stringify(result, null, 2));
     });
 });
@@ -70,15 +35,14 @@ app.post('/skillSet/workshopList', urlencodedParser, function(req, res) {
 app.post('/bookedWorkshops', urlencodedParser, function(req, res) {
     let studentId = parseInt(req.body.studentId);
     console.log(studentId);
-    let sql = `SELECT workShop.name FROM workShop INNER JOIN t_student_workShop ON t_student_workShop.workShopId=workShop.workShopId INNER JOIN student ON student.studentId=${studentId} and t_student_workShop.studentId = student.studentId;`;
+    let sql = `SELECT * FROM workShop INNER JOIN t_student_workShop ON t_student_workShop.workShopId=workShop.workShopId INNER JOIN student ON student.studentId=${studentId} and t_student_workShop.studentId = student.studentId;`;
     let query = db.query(sql, function(err, result) {
-        if(err) throw err;
+        if(err) console.log(err);
         console.log(JSON.stringify(result, null, 2));
         res.end(JSON.stringify(result, null, 2));
     });
 });
 
-//book the workshop by current student
 app.post('/book', urlencodedParser, function(req, res) {
     let studentId = req.body.studentId;
     let workshopId = req.body.workshopId;
@@ -120,8 +84,7 @@ app.post('/book', urlencodedParser, function(req, res) {
             console.log(err);
             return;
           }
-       
-          console.log('Sending successfully');
+            console.log('Sending successfully');
         });
 });
 
@@ -175,9 +138,9 @@ app.post('/studentInformation', function (req, res) {
     console.log('student information: ' + req.body);
     let studentId = req.body.studentId;
     let response;
-    let sql = `SELECT * FROM STUDENT WHERE studentId = "${studentId}";`;
+    let sql = `SELECT * FROM student WHERE studentId = "${studentId}";`;
     let query = db.query(sql, function(err, result) {
-        if(err) throw err;
+        if(err) console.log(err);
         response = result[0];
         console.log(response);
         res.end(JSON.stringify(response, null, 2));
@@ -190,9 +153,9 @@ app.post('/login', function (req, res) {
     var studentId = req.body.studentId;
     var password = req.body.password;
     var response;
-    let sql = `SELECT * FROM STUDENT WHERE studentId = "${studentId}" and password = "${password}";`;
+    let sql = `SELECT * FROM student WHERE studentId = "${studentId}" and password = "${password}";`;
     let query = db.query(sql, function(err, result) {
-        if(err) throw err;
+        if(err) console.log(err);
         response = result[0];
         if(response != undefined) {
             res.end(JSON.stringify(response));
@@ -204,6 +167,45 @@ app.post('/login', function (req, res) {
         }
     });
  });
+
+ //show profile
+ app.post('/studentProfile', function(req, res) {
+    var studentId = req.body.studentId;
+    let sql = `SELECT * FROM studentProfile where studentId=${studentId}`;
+    db.query(sql, function(err, result) {
+        if(err) console.log(err);
+        response = result[0];
+        console.log(response);
+        res.end(JSON.stringify(response, null, 2));
+    })
+ })
+
+ app.post('/updateProfile', function(req, res) {
+    var profileId = req.body.profileId;
+    var preferredFirstName = req.body.preferredFirstName;
+    var degree = req.body.degree;
+    var year = req.body.year;
+    var status = req.body.status;
+    var firstLanguage = req.body.firstLanguage;
+    var countryOfOrigin = req.body.countryOfOrigin;
+    let sql = `
+            UPDATE studentProfile SET preferredFirstName="${preferredFirstName}",degree="${degree}",year="${year}",status="${status}",firstLanguage="${firstLanguage}",countryOfOrigin="${countryOfOrigin}" WHERE profileId=${profileId}
+            `;
+    let successInf = {
+        inf: 'success'
+    };
+    let failInf = {
+        inf: 'fail'
+    }
+    db.query(sql, function(err, result) {
+        if(err) {
+            res.end(JSON.stringify(failInf));
+            console.log(err);
+        } else {
+            res.end(JSON.stringify(successInf));
+        }
+    })
+ })
 
 var server = app.listen(8888, function () {
  
