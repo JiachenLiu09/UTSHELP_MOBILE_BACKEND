@@ -43,6 +43,26 @@ app.post('/workshopDetail', urlencodedParser, function(req, res) {
     })
 })
 
+app.post('/skillSet', urlencodedParser, function(req, res) {
+    let skillSetId = req.body.skillSetId;
+    let sql = `SELECT * FROM skillSet WHERE skillSetId=${skillSetId}`
+    let query = db.query(sql, function(err, result) {
+        if(err) console.log(err);
+        response = result[0];
+        res.end(JSON.stringify(response, null, 2));
+    })
+})
+
+app.post('/room', urlencodedParser, function(req, res) {
+    let roomId = req.body.roomId;
+    let sql = `SELECT * FROM room WHERE roomId=${roomId}`
+    let query = db.query(sql, function(err, result) {
+        if(err) console.log(err);
+        response = result[0];
+        res.end(JSON.stringify(response, null, 2));
+    })
+})
+
 app.post('/bookedWorkshops', urlencodedParser, function(req, res) {
     let studentId = parseInt(req.body.studentId);
     console.log(studentId);
