@@ -35,7 +35,7 @@ app.get('/workshops', urlencodedParser, function(req, res) {
 
 app.post('/workshopDetail', urlencodedParser, function(req, res) {
     let workshopId = req.body.workshopId;
-    let sql = `SELECT * FROM workshop WHERE workshopId=${workshopId}`
+    let sql = `SELECT * FROM workShop WHERE workShopId=${workshopId}`
     let query = db.query(sql, function(err, result) {
         if(err) console.log(err);
         res.end(JSON.stringify(result, null, 2));
