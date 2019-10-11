@@ -38,7 +38,8 @@ app.post('/workshopDetail', urlencodedParser, function(req, res) {
     let sql = `SELECT * FROM workShop WHERE workShopId=${workshopId}`
     let query = db.query(sql, function(err, result) {
         if(err) console.log(err);
-        res.end(JSON.stringify(result, null, 2));
+        response = result[0];
+        res.end(JSON.stringify(response, null, 2));
     })
 })
 
