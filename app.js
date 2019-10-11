@@ -10,9 +10,10 @@ app.use(bodyParser());
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
 const db = mysql.createConnection({
-    host: 'aagmqmvaq3h3zl.cvdpbjinsegf.us-east-2.rds.amazonaws.com',
-    user: 'root',
-    password: 'rootroot',
+    host: 'utshelpdb.cvdpbjinsegf.us-east-2.rds.amazonaws.com',
+    port: 3306,
+    user: 'admin',
+    password: 'thisadmin',
     database: 'uts_help',
     multipleStatements: true
 });
@@ -31,6 +32,15 @@ app.get('/workshops', urlencodedParser, function(req, res) {
         res.end(JSON.stringify(result, null, 2));
     });
 });
+
+app.post('/workshopDetail', urlencodedParser, function(req, res) {
+    let workshopId = req.body.workshopId;
+    let sql = `SELECT * FROM workshop WHERE workshopId=${workshopId}`
+    let query = db.query(sql, function(err, result) {
+        if(err) console.log(err);
+        res.end(JSON.stringify(result, null, 2));
+    })
+})
 
 app.post('/bookedWorkshops', urlencodedParser, function(req, res) {
     let studentId = parseInt(req.body.studentId);
