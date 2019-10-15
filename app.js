@@ -74,6 +74,17 @@ app.post('/bookedWorkshops', urlencodedParser, function(req, res) {
     });
 });
 
+app.post('/sessions', urlencodedParser, function(req, res) {
+    let studentId = parseInt(req.body.studentId);
+    console.log(studentId);
+    let sql = `SELECT * FROM session where studentId=${studentId};`;
+    let query = db.query(sql, function(err, result) {
+        if(err) console.log(err);
+        console.log(JSON.stringify(result, null, 2));
+        res.end(JSON.stringify(result, null, 2));
+    });
+});
+
 app.post('/book', urlencodedParser, function(req, res) {
     let studentId = req.body.studentId;
     let workshopId = req.body.workshopId;
