@@ -26,7 +26,16 @@ db.connect((err) => {
 });
 
 app.get('/workshops', urlencodedParser, function(req, res) {
-    let sql = `SELECT * FROM workShop;`;
+    let skillSetId = req.body.skillSetId;
+    let sql = `SELECT * FROM workShop WHERE skillSetId=${skillSetId};`;
+    let query = db.query(sql, function(err, result) {
+        if(err) console.log(err);
+        res.end(JSON.stringify(result, null, 2));
+    });
+});
+
+app.get('/skillSets', urlencodedParser, function(req, res) {
+    let sql = `SELECT * FROM skillSet;`;
     let query = db.query(sql, function(err, result) {
         if(err) console.log(err);
         res.end(JSON.stringify(result, null, 2));
